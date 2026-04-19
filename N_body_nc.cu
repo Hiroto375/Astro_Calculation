@@ -11,7 +11,8 @@ constexpr float EPS2 = 1e-6f;
         cudaError_t err = call;                                            \
         if (err != cudaSuccess) {                                          \
             std::cerr << "CUDA error: " << cudaGetErrorString(err)         \
-                      << " at " << __FILE__ << ":" << __LINE__ << '\n';    \
+                      << "\ncode: " << static_cast<int>(err)               \
+                      << "\nat " << __FILE__ << ":" << __LINE__ << '\n';   \
             std::exit(EXIT_FAILURE);                                       \
         }                                                                  \
     } while (0)
@@ -70,7 +71,8 @@ __global__ void calculate_forces(const float4 *globalX, float4 *globalA, int N) 
     globalA[gtid] = acc4;
 }
 
-int main() {
+
+int main(){
     const int N = 1024;
     const int threadsPerBlock = 256;
     const int blocks = (N + threadsPerBlock - 1) / threadsPerBlock;
@@ -78,7 +80,7 @@ int main() {
     std::vector<float4> hX(N);
     std::vector<float4> hA(N);
 
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i< N; i++) {
         hX[i].x = 0.001f * i;
         hX[i].y = 0.001f * i;
         hX[i].z = 0.001f * i;
@@ -88,18 +90,30 @@ int main() {
     float4* dX = nullptr;
     float4* dA = nullptr;
 
+    std::cout << "before malloc dX\n";
     CUDA_CHECK(cudaMalloc(&dX, N * sizeof(float4)));
+
+    std::cout << "before malloc dA\n";
     CUDA_CHECK(cudaMalloc(&dA, N * sizeof(float4)));
 
+    std::cout << "before memcpy HtoD\n";
     CUDA_CHECK(cudaMemcpy(dX, hX.data(), N * sizeof(float4), cudaMemcpyHostToDevice));
 
     size_t sharedMemSize = threadsPerBlock * sizeof(float4);
+
+    std::cout << "before kernel launch\n";
     calculate_forces<<<blocks, threadsPerBlock, sharedMemSize>>>(dX, dA, N);
 
+    std::cout << "after kernel launch\n";
     CUDA_CHECK(cudaGetLastError());
+
+    std::cout << "before synchronize\n";
     CUDA_CHECK(cudaDeviceSynchronize());
 
+    std::cout << "before memcpy DtoH\n";
     CUDA_CHECK(cudaMemcpy(hA.data(), dA, N * sizeof(float4), cudaMemcpyDeviceToHost));
+
+    std::cout << "finished successfully\n";
 
     for (int i = 0; i < 5; i++) {
         std::cout << "Particle " << i << ": "

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <cstdlib>
 #include <cuda_runtime.h>
 
 
@@ -164,7 +165,7 @@ int main(){
     CUDA_CHECK(cudaMemcpy(hA.data(), dA, N * sizeof(float4), cudaMemcpyDeviceToHost));
 
     for (int i = 0; i < 5; i++) {
-        std::cout << "Particle" << i << ": " << hA[i].x << ", " << hA[i].y << ", " << hA[i].z << "\n";
+        std::cout << "Particle " << i << ": " << hA[i].x << ", " << hA[i].y << ", " << hA[i].z << "\n";
     }
 
     // GPUのメモリを解放

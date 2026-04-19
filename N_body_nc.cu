@@ -73,6 +73,20 @@ __global__ void calculate_forces(const float4 *globalX, float4 *globalA, int N) 
 
 
 int main(){
+    int deviceCount = 0;
+    cudaError_t err = cudaGetDeviceCount(&deviceCount);
+    std::cout << "cudaGetDeviceCount err = " << cudaGetErrorString(err)
+              << ", count = " << deviceCount << std::endl;
+
+    if (err != cudaSuccess || deviceCount == 0) {
+        std::cerr << "No usable CUDA device found." << std::endl;
+        return 1;
+    }
+
+    cudaDeviceProp prop;
+    CUDA_CHECK(cudaGetDeviceProperties(&prop, 0));
+    std::cout << "Using GPU: " << prop.name << std::endl;
+
     const int N = 1024;
     const int threadsPerBlock = 256;
     const int blocks = (N + threadsPerBlock - 1) / threadsPerBlock;

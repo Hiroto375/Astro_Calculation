@@ -118,12 +118,12 @@ int main() {
     CUDA_CHECK(cudaGetDeviceProperties(&prop, 0));
     std::cout << "Using GPU: " << prop.name << std::endl;
 
-    const int N = 256;
+    const int N = 1024;
     const int threadsPerBlock = 256;
     const int blocks = (N + threadsPerBlock - 1) / threadsPerBlock;
 
     const float dt = 0.001f;
-    const int numSteps = 2000;
+    const int numSteps = 10000;
     const int outputInterval = 20;
 
     std::vector<float4> hX(N);

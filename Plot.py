@@ -4,7 +4,7 @@ from matplotlib.animation import FuncAnimation
 import numpy as np
 
 # Load CSV
-df = pd.read_csv("trajectory.csv")
+df = pd.read_csv("trajectory2.csv")
 
 # Get sorted step values
 steps = sorted(df["step"].unique())
@@ -19,11 +19,11 @@ margin_y = 0.1 * (ymax - ymin + 1e-6)
 fig, ax = plt.subplots(figsize=(8, 8))
 scat = ax.scatter([], [], s=5)
 
-ax.set_xlim(xmin - margin_x, xmax + margin_x)
-ax.set_ylim(ymin - margin_y, ymax + margin_y)
+ax.set_xlim(-100, 100)
+ax.set_ylim(-100, 100)
 ax.set_xlabel("x")
 ax.set_ylabel("y")
-ax.set_title("N-body simulation")
+ax.set_title("solar system simulation")
 ax.set_aspect("equal", adjustable="box")
 
 text = ax.text(0.02, 0.95, "", transform=ax.transAxes)
@@ -50,5 +50,5 @@ ani = FuncAnimation(
     repeat=True
 )
 
-ani.save("nbody_animation.mp4", fps=20, dpi=150)
+ani.save("solar_animation.mp4", fps=20, dpi=150)
 plt.show()
